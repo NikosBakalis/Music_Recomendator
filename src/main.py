@@ -18,5 +18,14 @@ df = pandas.DataFrame(list(zip(userId, artistName, trackName, playlistName)), co
 
 print(df)
 
-train, test = train_test_split(df, test_size=0.5)
-print(train)
+# TILL HERE ALL GOOD!!!
+
+# Get all unique values of userId
+uniqueUserId = list(set(userId))
+print(uniqueUserId)
+
+songList = list(zip(artistName, trackName, playlistName))
+print(len(songList))
+# print(songList)
+uniqueSongs = list(set(songList))
+print(len(uniqueSongs))
