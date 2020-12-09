@@ -8,5 +8,3 @@ trackName = df[df.columns[2]]
 playlistName = df[df.columns[3]]
 
 print(userId)
-
-print("re")
