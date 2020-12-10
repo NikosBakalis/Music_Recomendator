@@ -1,5 +1,4 @@
 import pandas
-from sklearn.model_selection import train_test_split
 
 # pandas.set_option('display.max_columns', None)
 
@@ -16,16 +15,21 @@ playlistName = df[df.columns[3]].tolist()
 df = pandas.DataFrame(list(zip(userId, artistName, trackName, playlistName)), columns=['User_Id', 'Artist_Name',
                                                                                        'Track_Name', 'Playlist_Name'])
 
-print(df)
+# print(df)
 
 # TILL HERE ALL GOOD!!!
 
-# Get all unique values of userId
+# Gets all unique user IDs.
 uniqueUserId = list(set(userId))
-print(uniqueUserId)
 
-songList = list(zip(artistName, trackName, playlistName))
-print(len(songList))
-# print(songList)
+# Creates the song list.
+songList = list(zip(artistName, trackName))
+
+# Gets all unique songs.
 uniqueSongs = list(set(songList))
-print(len(uniqueSongs))
+
+# String data called categorical data.
+# What we have to do is to encode this categorical data.
+# The link below will help with the encoding.
+# https://machinelearningmastery.com/how-to-prepare-categorical-data-for-deep-learning-in-python/
+# After we encode the categorical data we can use them to train and test our dataframe.
