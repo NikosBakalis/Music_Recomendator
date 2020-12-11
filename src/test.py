@@ -9,4 +9,5 @@ print(enc.transform([['Female', 3], ['Male', 1], ['Female', 3]]))
 
 print(enc.inverse_transform([[1, 0], [0, 1]]))
 
+#den alaksa tipota na do oti douleuei to push
 
