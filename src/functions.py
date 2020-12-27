@@ -22,9 +22,10 @@ def load_dataset(filename):
 def prepare_inputs(X_train, X_test):
     oe = OrdinalEncoder()
     oe.fit(X_train)
-    print(X_train)
+    print(type(X_train))
     X_train_enc = oe.transform(X_train)
-    print(X_test)
+    oe.fit(X_test)
+    print(type(X_test))
     X_test_enc = oe.transform(X_test)
     return X_train_enc, X_test_enc
 
@@ -34,5 +35,6 @@ def prepare_targets(y_train, y_test):
     le = LabelEncoder()
     le.fit(y_train)
     y_train_enc = le.transform(y_train)
+    le.fit(y_test)
     y_test_enc = le.transform(y_test)
     return y_train_enc, y_test_enc
