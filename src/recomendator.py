@@ -40,7 +40,6 @@ num_of_nans = data.isnull().sum()
 # https://medium.com/analytics-vidhya/ways-to-handle-categorical-column-missing-data-its-implementations-15dc4a56893
 #https://medium.com/analytics-vidhya/best-way-to-impute-categorical-data-using-groupby-mean-mode-2dc5f5d4e12d
 
-
 # plots.plot(data['trackname'])
 
 data.dropna(inplace=True)
