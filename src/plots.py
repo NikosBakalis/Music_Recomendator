@@ -1,9 +1,7 @@
-import functions
-from sklearn.model_selection import train_test_split
-import pandas as pd
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+
 
 data = pd.read_csv("../data/spotify_dataset.csv",low_memory=False)
 
