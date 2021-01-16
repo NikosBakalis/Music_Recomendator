@@ -2,7 +2,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-
 data = pd.read_csv("../data/spotify_dataset.csv",low_memory=False)
 
 def plot(column_name):
