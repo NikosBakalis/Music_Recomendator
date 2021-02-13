@@ -3,7 +3,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-data = pd.read_csv("../data/small_dataset.csv",low_memory=False)
+data = pd.read_csv("../data/small_dataset.csv", low_memory=False)
 
 
 ### data improvement ###
