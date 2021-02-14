@@ -12,19 +12,19 @@ import matplotlib.pyplot as plt
 # TO_DO: content based recommender systems python evaluation metrics
 
 
-data = pd.read_csv("../data/small_dataset.csv",low_memory=False)
+data = pd.read_csv("../data/small_dataset.csv", low_memory=False)
 
 
 ### data improvement ###
 
-#remove unnamed columns
+# remove unnamed columns
 data = data.loc[:, ~data.columns.str.contains('^Unnamed')]
-#rename columns
+# rename columns
 data.columns = ['user_id', 'artistname', 'trackname', 'playlistname']
-#remove ';;;;' from the column 'playlistname'
+# remove ';;;;' from the column 'playlistname'
 data['playlistname'] = data['playlistname'].str.replace(r';;;;', '')
 # print(data)
-#now we can work with our improved dataset
+# now we can work with our improved dataset
 
 
 # processing of overviews
@@ -92,28 +92,46 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression # our model
 from sklearn.model_selection import train_test_split
 
+
 def remove_urls(text):
-    new_text = ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)"," ",text).split())
-    return new_text# make all text lowercase
+    new_text = ' '.join(re.sub("(@[A-Za-z0-9]+) | ([^0-9A-Za-z \t]) | (\w+:\/\/\S+)", " ", text).split())
+    return new_text     # make all text lowercase
+
+
 def text_lowercase(text):
-    return text.lower()# remove numbers
+    return text.lower()     # remove numbers
+
+
 def remove_numbers(text):
     result = re.sub(r'\d+', '', text)
-    return result# remove punctuation
+    return result   # remove punctuation
+
+
 def remove_punctuation(text):
     translator = str.maketrans('', '', string.punctuation)
-    return text.translate(translator)# tokenize
+    return text.translate(translator)   # tokenize
+
+
 def tokenize(text):
     text = word_tokenize(text)
-    return text# remove stopwords
+    return text # remove stopwords
+
+
 stop_words = set(stopwords.words('english'))
+
+
 def remove_stopwords(text):
     text = [i for i in text if not i in stop_words]
-    return text# lemmatize
+    return text     # lemmatize
+
+
 lemmatizer = WordNetLemmatizer()
+
+
 def lemmatize(text):
     text = [lemmatizer.lemmatize(token) for token in text]
     return text
+
 
 def preprocessing(text):
     text = text_lowercase(text)
@@ -137,6 +155,7 @@ def pp_text_column(column_name):
         pp_text_data = preprocessing(text_data)
         pp_text_train.append(pp_text_data)
     data[f'pp_text_{column_name}'] = pp_text_train
+
 
 pp_text_column('trackname')
 pp_text_column('playlistname')
@@ -171,6 +190,7 @@ sig = sigmoid_kernel(tfv_matrix, tfv_matrix)
 # Reverse mapping of indices and movie titles
 indices = pd.Series(data.index, index=data['trackname']).drop_duplicates()
 
+
 # Credit to Ibtesam Ahmed for the skeleton code
 def give_rec(title, sig=sig):
     # Get the index corresponding to original_title
@@ -190,5 +210,6 @@ def give_rec(title, sig=sig):
 
     # Top 10 most similar movies
     return data['trackname'].iloc[movie_indices]
+
 
 print(give_rec('7 Years Too Late'))
