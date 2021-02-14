@@ -1,19 +1,11 @@
 import pandas as pd
-import ast
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-import seaborn as sns
-import numpy as np
-import matplotlib.pyplot as plt
 
-# preprocessed text and recomendation
+# preprocessed text and recommendation
 
 # TO_DO: content based recommender systems python evaluation metrics
 
 
 data = pd.read_csv("../data/small_dataset.csv", low_memory=False)
-
 
 ### data improvement ###
 
@@ -37,16 +29,11 @@ data['playlistname'] = data['playlistname'].str.replace(r';;;;', '')
 
 # import basic libraries
 import pandas as pd
-import numpy as np
-import re
-import nltk
-from nltk.corpus import stopwords
 from nltk.stem.porter import *
+
 stemmer = PorterStemmer()
-import os
 # load the word2vec algorithm from the gensim library
 # from gensim.models import word2vec
-from nltk.tokenize import word_tokenize
 
 # def review_to_words(raw_review):
 #     # 1. Remove non-letters
@@ -80,41 +67,35 @@ from nltk.tokenize import word_tokenize
 # https://towardsdatascience.com/preprocessing-text-data-in-python-an-introduction-via-kaggle-7d28ad9c9eb
 #
 
-import string # used for preprocessing
-import re # used for preprocessing
-import nltk # the Natural Language Toolkit, used for preprocessing
-import numpy as np # used for managing NaNs
-import nltk
+import string  # used for preprocessing
+import re  # used for preprocessing
 from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords # used for preprocessing
-from nltk.stem import WordNetLemmatizer # used for preprocessing
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression # our model
-from sklearn.model_selection import train_test_split
+from nltk.corpus import stopwords  # used for preprocessing
+from nltk.stem import WordNetLemmatizer  # used for preprocessing
 
 
 def remove_urls(text):
     new_text = ' '.join(re.sub("(@[A-Za-z0-9]+) | ([^0-9A-Za-z \t]) | (\w+:\/\/\S+)", " ", text).split())
-    return new_text     # make all text lowercase
+    return new_text  # make all text lowercase
 
 
 def text_lowercase(text):
-    return text.lower()     # remove numbers
+    return text.lower()  # remove numbers
 
 
 def remove_numbers(text):
     result = re.sub(r'\d+', '', text)
-    return result   # remove punctuation
+    return result  # remove punctuation
 
 
 def remove_punctuation(text):
     translator = str.maketrans('', '', string.punctuation)
-    return text.translate(translator)   # tokenize
+    return text.translate(translator)  # tokenize
 
 
 def tokenize(text):
     text = word_tokenize(text)
-    return text # remove stopwords
+    return text  # remove stopwords
 
 
 stop_words = set(stopwords.words('english'))
@@ -122,7 +103,7 @@ stop_words = set(stopwords.words('english'))
 
 def remove_stopwords(text):
     text = [i for i in text if not i in stop_words]
-    return text     # lemmatize
+    return text  # lemmatize
 
 
 lemmatizer = WordNetLemmatizer()
@@ -150,7 +131,7 @@ def preprocessing(text):
 # print(data['trackname'].head(10))
 
 def pp_text_column(column_name):
-    pp_text_train = [] # our preprocessed text column
+    pp_text_train = []  # our preprocessed text column
     for text_data in data[column_name]:
         pp_text_data = preprocessing(text_data)
         pp_text_train.append(pp_text_data)
@@ -175,7 +156,6 @@ tfv = TfidfVectorizer()
 # Filling NaNs with empty string
 # data['trackname'] = data['trackname'].fillna('')
 data['comb'] = data['pp_text_playlistname'] + ' ' + data['pp_text_artistname']
-
 
 tfv_matrix = tfv.fit_transform(data['comb'])
 
