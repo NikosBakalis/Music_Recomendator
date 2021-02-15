@@ -2,8 +2,8 @@ import pandas
 from sklearn.preprocessing import OrdinalEncoder, LabelEncoder
 
 
-# Clears the dataset.
-def clear_dataset(filename):
+# Fixes the dataset.
+def fix_dataset(filename):
     df = pandas.read_csv(filename)
     df = df.iloc[:, 0:4]
     df.rename(columns={df.columns[0]: "User_Id",
@@ -36,10 +36,10 @@ def load_dataset(filename):
 def prepare_inputs(X_train, X_test):
     oe = OrdinalEncoder()
     oe.fit(X_train)
-    print(type(X_train))
+    # print(type(X_train))
     X_train_enc = oe.transform(X_train)
     oe.fit(X_test)
-    print(type(X_test))
+    # print(type(X_test))
     X_test_enc = oe.transform(X_test)
     return X_train_enc, X_test_enc
 
