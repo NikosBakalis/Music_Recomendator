@@ -1,11 +1,25 @@
-from pandas import read_csv
+import pandas
 from sklearn.preprocessing import OrdinalEncoder, LabelEncoder
+
+
+# Clears the dataset.
+def clear_dataset(filename):
+    df = pandas.read_csv(filename)
+    df = df.iloc[:, 0:4]
+    df.rename(columns={df.columns[0]: "User_Id",
+                       df.columns[1]: "Artist_Name",
+                       df.columns[2]: "Track_Name",
+                       df.columns[3]: "Playlist_Name"},
+              inplace=True)
+    df.dropna(inplace=True)
+    df["Playlist_Name"] = df["Playlist_Name"].map(lambda x: x.rstrip(';'))
+    df.to_csv("../data/correct_dataset.csv", index=False)
 
 
 # Load the dataset.
 def load_dataset(filename):
     # load the dataset as a pandas DataFrame
-    data = read_csv(filename, low_memory=False)
+    data = pandas.read_csv(filename, low_memory=False)
     # retrieve numpy array
     dataset = data.values
     # split into input (X) and output (y) variables
