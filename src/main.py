@@ -40,6 +40,10 @@ y_test_enc = y_test_enc.ravel()
 
 # region Creation of dictionaries.
 
+X_combine = X_combine.ravel()
+
+X_combine_dict = {(X_combine[i], X_combine[i + 1], X_combine[i + 2]): [X_combine[i + 3], X_combine[i + 4], X_combine[i + 5]] for i in range(0, len(X_combine), 6)}
+
 y_combine = y_combine.ravel()
 
 y_combine_dict = dict(zip(y_combine[::2], y_combine[1::2]))
@@ -58,11 +62,15 @@ prediction = knn.predict(X_test_enc)
 
 result = 1 - spatial.distance.cosine(prediction, y_test_enc)
 
-print(y_test_enc[0])
+print(y_test_enc[0], "\n")
+
+print((str(X_test_enc[0][0]), str(X_test_enc[0][1]), str(X_test_enc[0][2])))
+
+print(X_combine_dict.get((str(X_test_enc[0][0]), str(X_test_enc[0][1]), str(X_test_enc[0][2]))), "\n")
 
 print(prediction[0])
 
-print(y_combine_dict.get(prediction[0]))
+print(y_combine_dict.get(prediction[0]), "\n")
 
 print(round(result * 100, 2), "%")
 
