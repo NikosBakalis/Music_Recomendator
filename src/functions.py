@@ -42,13 +42,3 @@ def prepare_inputs(X_train, X_test):
     # print(type(X_test))
     X_test_enc = oe.transform(X_test)
     return X_train_enc, X_test_enc
-
-
-# prepare target
-def prepare_targets(y_train, y_test):
-    le = LabelEncoder()
-    le.fit(y_train)
-    y_train_enc = le.transform(y_train)
-    le.fit(y_test)
-    y_test_enc = le.transform(y_test)
-    return y_train_enc, y_test_enc
