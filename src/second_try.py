@@ -1,78 +1,88 @@
-import pandas as pd
-
-# preprocessed text and recommendation
-
-# TO_DO: content based recommender systems python evaluation metrics
-
-
-data = pd.read_csv("../data/small_dataset.csv", low_memory=False)
-
-### data improvement ###
-
-# remove unnamed columns
-data = data.loc[:, ~data.columns.str.contains('^Unnamed')]
-# rename columns
-data.columns = ['user_id', 'artistname', 'trackname', 'playlistname']
-# remove ';;;;' from the column 'playlistname'
-data['playlistname'] = data['playlistname'].str.replace(r';;;;', '')
-# print(data)
-# now we can work with our improved dataset
-
-
-# processing of overviews
-# user_id           0
-# artistname      828
-# trackname       109
-# playlistname    696
-
-# https://morioh.com/p/2fea5a49b62d
-
 # import basic libraries
 import pandas as pd
 from nltk.stem.porter import *
-
-stemmer = PorterStemmer()
-# load the word2vec algorithm from the gensim library
-# from gensim.models import word2vec
-
-# def review_to_words(raw_review):
-#     # 1. Remove non-letters
-#     letters_only = re.sub("[^a-zA-Z]", " ", raw_review)
-#     # 2. Convert to lower case, split into individual words
-#     words = letters_only.lower().split()
-#
-#     # 3. Remove Stopwords. In Python, searching a set is much faster than searching a list, so convert the stop words to a set
-#     stops = set(stopwords.words("english"))
-#
-#     # 4. Remove stop words
-#     meaningful_words = [w for w in words if not w in stops]  # returns a list
-#
-#     # 5. Stem words. Need to define porter stemmer above
-#     singles = [stemmer.stem(word) for word in meaningful_words]
-#
-#     # 6. Join the words back into one string separated by space, and return the result.
-#     return (" ".join(singles))
-#
-# # print(review_to_words)
-# # print(data['trackname'].head(10))
-# # data['trackname'] = data.trackname.apply(review_to_words)
-# # print(data['trackname'].head(10))
-
-# kano apo edo :
-# https://towardsdatascience.com/preprocessing-text-data-in-python-an-introduction-via-kaggle-7d28ad9c9eb
-# thelo na ftiakso ta strings tis katse stils gia na mporei na ginei kalitero to tfidf
-# diladi o ipologismos
-# meta to recomend to afino idio i perno apo to first_try
-
-# https://towardsdatascience.com/preprocessing-text-data-in-python-an-introduction-via-kaggle-7d28ad9c9eb
-#
-
-import string  # used for preprocessing
-import re  # used for preprocessing
+import string # used for preprocessing
+import re # used for preprocessing
 from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords  # used for preprocessing
-from nltk.stem import WordNetLemmatizer  # used for preprocessing
+from nltk.corpus import stopwords # used for preprocessing
+from nltk.stem import WordNetLemmatizer # used for preprocessing
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import sigmoid_kernel
 
+# import numpy as np # used for managing NaNs
+# import nltk # the Natural Language Toolkit, used for preprocessing
+
+# TO_DO: content based recommender systems python evaluation metrics
+
+data = pd.read_csv("../data/25000_dataset.csv",low_memory=False)
+
+### data improvement ###
+#remove unnamed columns
+data = data.loc[:, ~data.columns.str.contains('^Unnamed')]
+#rename columns
+data.columns = ['user_id', 'artistname', 'trackname', 'playlistname']
+#remove ';;;;' from the column 'playlistname'
+data['playlistname'] = data['playlistname'].str.replace(r';;;;', '')
+
+#now we can work with our improved dataset
+data['artistname'] = data['artistname'].astype(str)
+data['trackname'] = data['trackname'].astype(str)
+data['playlistname'] = data['playlistname'].astype(str)
+
+### explore dataset ###
+users = data['user_id'].unique() # 562 unique user_ids
+artistname = data['artistname'].unique() # 35023 unique artistnames
+trackname = data['trackname'].unique() # 190106 unique tracknames
+playlistname = data['playlistname'].unique() # 7117 unique playlistnames
+# print('column_name =',len(column_name))
+
+# we check if any value is NaN in our dataset
+num_of_nans = data.isnull().sum()
+# print(num_of_nans)
+# user_id         0
+# artistname      0
+# trackname       0
+# playlistname    0
+
+#there aren't any NaN values
+
+
+####################################################################################################
+def review_to_words(text):
+    # 1. Remove non-letters
+    letters_only = ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)"," ",text).split())
+
+    # 2. Convert to lower case, split into individual words
+    words = letters_only.lower()
+
+    result = re.sub(r'\d+', '', words)
+
+    translator = str.maketrans('', '', string.punctuation)
+    a = result.translate(translator)
+
+    b = word_tokenize(a)
+
+    # 3. Remove Stopwords. In Python, searching a set is much faster than searching a list, so convert the stop words to a set
+    stops = set(stopwords.words("english"))
+
+    # 4. Remove stop words
+    meaningful_words = [w for w in b if not w in stops]  # returns a list
+
+    lemmatizer = WordNetLemmatizer()
+    c = [lemmatizer.lemmatize(token) for token in meaningful_words]
+
+    # 5. Stem words. Need to define porter stemmer above
+    stemmer = PorterStemmer()
+    singles = [stemmer.stem(word) for word in c]
+
+    # 6. Join the words back into one string separated by space, and return the result.
+    return (" ".join(singles))
+
+
+# print(review_to_words)
+# print(data['trackname'].head(10))
+# data['trackname'] = data.trackname.apply(review_to_words)
+# print(data['trackname'].head(10))
 
 def remove_urls(text):
     new_text = ' '.join(re.sub("(@[A-Za-z0-9]+) | ([^0-9A-Za-z \t]) | (\w+:\/\/\S+)", " ", text).split())
@@ -125,54 +135,42 @@ def preprocessing(text):
     text = ' '.join(text)
     return text
 
-
 # print(data['trackname'].head(10))
 # data['trackname'] = data.trackname.apply(preprocessing)
 # print(data['trackname'].head(10))
+####################################################################################################
 
-def pp_text_column(column_name):
-    pp_text_train = []  # our preprocessed text column
-    for text_data in data[column_name]:
-        pp_text_data = preprocessing(text_data)
-        pp_text_train.append(pp_text_data)
-    data[f'pp_text_{column_name}'] = pp_text_train
+## preprocessed text to column function ##
+def preprocessed_column(column_name):
+    preprocessed_text = []
+    for text_data in data[column_name]: #each row in the column will be preprocessed
+        pp_text_data = review_to_words(text_data)
+        preprocessed_text.append(pp_text_data)
+    data[f'pp_text_{column_name}'] = preprocessed_text
 
+preprocessed_column('artistname')
+preprocessed_column('trackname')
+preprocessed_column('playlistname')
 
-pp_text_column('trackname')
-pp_text_column('playlistname')
-pp_text_column('artistname')
-# print(data[['artistname','pp_text_artistname']].head(10))
-# print(data.columns)
-from sklearn.feature_extraction.text import TfidfVectorizer
-
-# Using Abhishek Thakur's arguments for TF-IDF
-# tfv = TfidfVectorizer(min_df=3,  max_features=None,
-#             strip_accents='unicode', analyzer='word',token_pattern=r'\w{1,}',
-#             ngram_range=(1, 3), use_idf=1,smooth_idf=1,sublinear_tf=1,
-#             stop_words = 'english')
+# the columns that we have now are:
+# ['user_id', 'artistname', 'trackname', 'playlistname',
+# 'pp_text_artistname', 'pp_text_trackname', 'pp_text_playlistname']
+# columns with a name that starts with 'pp_text_' have preprocessed text from the original columns#
 
 tfv = TfidfVectorizer()
-
-# Filling NaNs with empty string
-# data['trackname'] = data['trackname'].fillna('')
 data['comb'] = data['pp_text_playlistname'] + ' ' + data['pp_text_artistname']
 
 tfv_matrix = tfv.fit_transform(data['comb'])
-
 print(tfv_matrix.shape)
 # print(tfv_matrix)
-
-from sklearn.metrics.pairwise import sigmoid_kernel
 
 # Compute the sigmoid kernel
 sig = sigmoid_kernel(tfv_matrix, tfv_matrix)
 
-# Reverse mapping of indices and movie titles
+# Reverse mapping of indices and tracknames
 indices = pd.Series(data.index, index=data['trackname']).drop_duplicates()
 
-
-# Credit to Ibtesam Ahmed for the skeleton code
-def give_rec(title, sig=sig):
+def give_title(title, sig=sig):
     # Get the index corresponding to original_title
     idx = indices[title]
 
@@ -191,5 +189,49 @@ def give_rec(title, sig=sig):
     # Top 10 most similar movies
     return data['trackname'].iloc[movie_indices]
 
+print(give_title('7 Years Too Late'))
 
-print(give_rec('7 Years Too Late'))
+
+from sklearn.feature_extraction.text import HashingVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+
+data['comb'] = data['pp_text_playlistname'] + ' ' + data['pp_text_artistname']
+
+tfv = TfidfVectorizer()
+data['comb'] = data['pp_text_playlistname'] + ' ' + data['pp_text_artistname']
+tfv_matrix = tfv.fit_transform(data['comb'])
+# print(tfv_matrix.shape)
+sim = sigmoid_kernel(tfv_matrix, tfv_matrix)
+
+cv=HashingVectorizer()
+count_matrix = cv.fit_transform(data['comb'])
+# sim=cosine_similarity(count_matrix)
+# print(sim)
+# print(type(sim))
+
+def recommend(m,how_many):
+# string trackname kai posa idia thelo na bgalei
+
+    if m not in data['trackname'].unique():
+        print('not in our dataset')
+    else:
+        i = data.loc[data['trackname'] == m].index[0] #vrisko pou einai to trackname sto dataset
+        # let’s sort the similarity score list on the basis of similarity score
+        lst = list(enumerate(sim[i]))
+        # now we have the indexes of most similar tracknames
+        # we need to iterate through the list and store tracknames on the indexes in a new list
+        lst = sorted(lst,key=lambda x:x[1],reverse=True)
+        # the list is sorted in the descending order of similarity score
+        # keep only the top (how_many) values of list
+        #not keeping the first index(0) because its the same trackname
+        lst = lst[1:how_many+1]
+        l=[]
+        for i in range(len(lst)):
+            a=lst[i][0]
+            l.append(data['trackname'][a])
+        for i in range(len(l)):
+            print(l[i])
+
+
+recommend('7 Years Too Late',11)
