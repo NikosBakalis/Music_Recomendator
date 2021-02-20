@@ -1,11 +1,13 @@
 # region Imports
 
+import pandas
 import functions
 import os
 import numpy
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from scipy import spatial
+from collections import Counter
 
 # endregion
 
@@ -73,9 +75,11 @@ prediction = knn.predict(X_test_enc)
 # The result of the prediction
 result = 1 - spatial.distance.cosine(prediction, y_test_enc)
 
+# region Prints.
+
 # print(y_test_enc[0], "\n")
 
-print(y_test_enc, "\n")
+print("Answer: \t", y_test_enc, "\n")
 
 # print((str(X_test_enc[0][0]), str(X_test_enc[0][1]), str(X_test_enc[0][2])))
 
@@ -83,10 +87,65 @@ print(y_test_enc, "\n")
 
 # print(prediction[0])
 
-print(prediction)
+print("Prediction: ", prediction, "\n")
 
-print(y_combine_dict.get(prediction[0]), "\n")
+# print(y_combine_dict.get(prediction[0]), "\n")
 
 print(round(result * 100, 2), "%")
+
+# endregion
+
+# region Final results.
+
+user_input = input("Enter user id: ")
+
+ids_enc = list()
+
+for i, j in zip(prediction, y_test_enc):
+    if i != j and j == int(user_input):
+        ids_enc.append(int(i))
+
+# Sorting on basis of frequency of elements
+ids_enc = [item for items, c in Counter(ids_enc).most_common() for item in [items] * c]
+
+ids_enc = set(ids_enc)
+
+print(ids_enc, "\n")
+
+ids = list()
+
+for i in ids_enc:
+    if i in y_combine_dict:
+        ids.append(y_combine_dict[i])
+
+# region Joins X and y.
+
+yX = numpy.concatenate((y, X), axis=1)
+
+search = list()
+
+for i in ids:
+    rows, cols = numpy.where(yX == i)
+    search.append(yX[rows])
+
+y_new = list()
+
+for a in search:
+    for b in a:
+        y_new.append(list(b[1:]))
+
+y_new = tuple(map(tuple, y_new))
+
+y_new = Counter(y_new).most_common()
+
+i = 0
+
+while i < 10:
+    print(i + 1, "\t:\t", y_new[i][0])
+    i = i + 1
+
+# endregion
+
+# endregion
 
 # endregion
