@@ -1,6 +1,5 @@
 # region Imports
 
-import pandas
 import functions
 import os
 import numpy
@@ -33,7 +32,7 @@ X_enc, y_enc = functions.prepare_inputs(X, y)
 # region Splits the dataset to train and test.
 
 # Splits the dataset to train and test.
-X_train_enc, X_test_enc, y_train_enc, y_test_enc = train_test_split(X_enc, y_enc, train_size=0.75,  shuffle=True)
+X_train_enc, X_test_enc, y_train_enc, y_test_enc = train_test_split(X_enc, y_enc, train_size=0.75, shuffle=True)
 
 # Combines the X_enc and the X.
 X_combine = numpy.stack((X_enc, X), axis=1)
@@ -118,7 +117,7 @@ for i in ids_enc:
     if i in y_combine_dict:
         ids.append(y_combine_dict[i])
 
-# region Joins X and y.
+# region Joins y and X.
 
 yX = numpy.concatenate((y, X), axis=1)
 
