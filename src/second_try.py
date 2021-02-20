@@ -14,7 +14,10 @@ from sklearn.metrics.pairwise import sigmoid_kernel
 
 # TO_DO: content based recommender systems python evaluation metrics
 
-data = pd.read_csv("../data/25000_dataset.csv",low_memory=False)
+# https://www.datacamp.com/community/tutorials/recommender-systems-python
+# https://medium.com/analytics-vidhya/content-based-recommender-systems-in-python-2b330e01eb80
+
+data = pd.read_csv("../data/small_dataset.csv",low_memory=False)
 
 ### data improvement ###
 #remove unnamed columns
@@ -144,7 +147,7 @@ def preprocessing(text):
 def preprocessed_column(column_name):
     preprocessed_text = []
     for text_data in data[column_name]: #each row in the column will be preprocessed
-        pp_text_data = review_to_words(text_data)
+        pp_text_data = preprocessing(text_data)
         preprocessed_text.append(pp_text_data)
     data[f'pp_text_{column_name}'] = preprocessed_text
 
@@ -157,15 +160,33 @@ preprocessed_column('playlistname')
 # 'pp_text_artistname', 'pp_text_trackname', 'pp_text_playlistname']
 # columns with a name that starts with 'pp_text_' have preprocessed text from the original columns#
 
-tfv = TfidfVectorizer()
-data['comb'] = data['pp_text_playlistname'] + ' ' + data['pp_text_artistname']
+tfv = TfidfVectorizer(analyzer='word', ngram_range=(1, 3), min_df=0, stop_words='english')
 
+####################
+# ΠΟΙΟ ΑΠΟ ΤΑ 2 ΚΟΜΠ ΚΡΑΤΑΩ ???
+data['comb'] = data['pp_text_playlistname'] + ' ' + data['pp_text_artistname'] + ' ' + data['pp_text_trackname']
+# data['comb'] = data['pp_text_playlistname'] + ' ' + data['pp_text_artistname']
+####################
+
+
+# data['comb'] = data['playlistname'] + ' ' + data['artistname']
+
+########
+# o improve our system, we could consider replacing TF-IDF with word counts,
+# and we could also explore other similarity scores.
+##########
 tfv_matrix = tfv.fit_transform(data['comb'])
-print(tfv_matrix.shape)
+# print(tfv_matrix.shape)
 # print(tfv_matrix)
-
+# Now that we have a matrix of our words, we can begin calculating similarity scores
+#####
+#MPORO NA VALO KI ALLO KERNEL OTI THELO
+#####
 # Compute the sigmoid kernel
-sig = sigmoid_kernel(tfv_matrix, tfv_matrix)
+
+# sig = sigmoid_kernel(tfv_matrix, tfv_matrix)
+from sklearn.metrics.pairwise import linear_kernel
+sig = linear_kernel(tfv_matrix, tfv_matrix)
 
 # Reverse mapping of indices and tracknames
 indices = pd.Series(data.index, index=data['trackname']).drop_duplicates()
@@ -177,61 +198,74 @@ def give_title(title, sig=sig):
     # Get the pairwsie similarity scores
     sig_scores = list(enumerate(sig[idx]))
 
-    # Sort the movies
+    # Sort the tracknames based on the similarity scores
     sig_scores = sorted(sig_scores, key=lambda x: x[1], reverse=True)
 
-    # Scores of the 10 most similar movies
+    # Scores of the 10 most similar tracknames
     sig_scores = sig_scores[1:11]
 
-    # Movie indices
+    # Tracknames indices
     movie_indices = [i[0] for i in sig_scores]
 
-    # Top 10 most similar movies
+    # Top 10 most similar tracknames
     return data['trackname'].iloc[movie_indices]
 
-print(give_title('7 Years Too Late'))
+print(give_title('Everywhere I Go'))
+
+##########
+# https://www.kaggle.com/gspmoreira/recommender-systems-in-python-101
+# EVALUATION METRIC
+##########
 
 
-from sklearn.feature_extraction.text import HashingVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
 
 
-data['comb'] = data['pp_text_playlistname'] + ' ' + data['pp_text_artistname']
 
-tfv = TfidfVectorizer()
-data['comb'] = data['pp_text_playlistname'] + ' ' + data['pp_text_artistname']
-tfv_matrix = tfv.fit_transform(data['comb'])
-# print(tfv_matrix.shape)
-sim = sigmoid_kernel(tfv_matrix, tfv_matrix)
 
-cv=HashingVectorizer()
-count_matrix = cv.fit_transform(data['comb'])
+
+#####################################
+# from sklearn.feature_extraction.text import HashingVectorizer
+# from sklearn.metrics.pairwise import cosine_similarity
+# from sklearn.feature_extraction.text import CountVectorizer
+#
+#
+#
+# cv=CountVectorizer()
+# count_matrix = cv.fit_transform(data['comb'])
+# # print(count_matrix)
 # sim=cosine_similarity(count_matrix)
-# print(sim)
-# print(type(sim))
+# # print(sim)
+# # print(type(sim))
+#
+# def recommend(m,how_many):
+# # string trackname kai posa idia thelo na bgalei
+#
+#     if m not in data['trackname'].unique():
+#         print('not in our dataset')
+#     else:
+#         i = data.loc[data['trackname'] == m].index[0] #vrisko pou einai to trackname sto dataset
+#         #get the row related to the trackname from the similarity score matrix
+#         # let’s sort the similarity score list on the basis of similarity score
+#         lst = list(enumerate(sim[i]))
+#         # now we have the indexes of most similar tracknames
+#         # we need to iterate through the list and store tracknames on the indexes in a new list
+#         lst = sorted(lst,key=lambda x:x[1],reverse=True)
+#         # the list is sorted in the descending order of similarity score
+#         # we keep only the top (how_many) values of list
+#         # not keeping the first index(0) because its the same trackname
+#         lst = lst[1:how_many+1]
+#         l=[]
+#         for i in range(len(lst)):
+#             a=lst[i][0]
+#             l.append(data['trackname'][a])
+#         for i in range(len(l)):
+#             print(l[i])
+#######################################################
 
-def recommend(m,how_many):
-# string trackname kai posa idia thelo na bgalei
-
-    if m not in data['trackname'].unique():
-        print('not in our dataset')
-    else:
-        i = data.loc[data['trackname'] == m].index[0] #vrisko pou einai to trackname sto dataset
-        # let’s sort the similarity score list on the basis of similarity score
-        lst = list(enumerate(sim[i]))
-        # now we have the indexes of most similar tracknames
-        # we need to iterate through the list and store tracknames on the indexes in a new list
-        lst = sorted(lst,key=lambda x:x[1],reverse=True)
-        # the list is sorted in the descending order of similarity score
-        # keep only the top (how_many) values of list
-        #not keeping the first index(0) because its the same trackname
-        lst = lst[1:how_many+1]
-        l=[]
-        for i in range(len(lst)):
-            a=lst[i][0]
-            l.append(data['trackname'][a])
-        for i in range(len(l)):
-            print(l[i])
-
-
-recommend('7 Years Too Late',11)
+input_var = input("Enter a song title: ")
+# # print ("you entered " + input_var)
+# recommend(input_var,11)
+# print('\n')
+# recommend('Dance Tonight',11)
+# print('\n')
+print(give_title(input_var))
