@@ -83,7 +83,7 @@ def preprocessing(text):
 ## Preprocessed text to column function ##
 def preprocessed_column(column_name):
     preprocessed_text = []
-    for text_data in data[column_name]: #each row in the column will be preprocessed
+    for text_data in data[column_name]:  # each row in the column will be preprocessed
         pp_text_data = preprocessing(text_data)
         preprocessed_text.append(pp_text_data)
     data[f'pp_text_{column_name}'] = preprocessed_text
@@ -142,7 +142,7 @@ def recommend(track_title, how_many):
         # Now we have the indexes of most similar tracknames
         # We need to iterate through the list and store tracknames on the indexes in a new list
         # lst has the index of the trackname and the cosine similarity that the track name has with the track name given
-        lst = sorted(lst,key=lambda x:x[1],reverse=True)
+        lst = sorted(lst,key=lambda x: x[1], reverse=True)
         # The list is sorted in the descending order of similarity score
         # We keep only the top (how_many) values of list
         # Not keeping the first index(0) because its the same trackname
@@ -155,15 +155,14 @@ def recommend(track_title, how_many):
             # We save in track_indices list the track name which index is kept in index_fom_lst
             track_indices.append(data['trackname'][index_fom_lst])
         for i in range(len(track_indices)):
-            print(lst[i][0],track_indices[i])
+            print(lst[i][0], track_indices[i])
 #######################################################
 
 
 # Ask user the song title and how many results to return
 
 yes_no = 1
-while (yes_no == 1):
-
+while yes_no == 1:
     try:
         input_song = input("Please enter a song title: ")
         posa = int(input("Please enter how many songs to return: "))
@@ -173,7 +172,6 @@ while (yes_no == 1):
     except ValueError:
        print("\nPlease only use integers")
        yes_no = int(input("If you want to continue type 1 else type 0: "))
-
 
 
 ##########
