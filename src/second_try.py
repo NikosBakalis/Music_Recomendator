@@ -165,20 +165,6 @@ def recommend(track_title, how_many):
 #             break
 
 
-# prompt = "if you want the system to recommend a song type 1 else type 0: "
-# while True:
-#     try:
-#         imp = int(input(prompt))
-#         if imp == 1:
-#             input_song = input("Please enter a song title: ")
-#             posa = int(input("Please enter how many songs to return: "))
-#             recommend(input_song, posa)
-#             print('\n')
-#             raise ValueError
-#         break
-#     except ValueError:
-#         prompt = "if you want the system to recommend a song type 1 else type 0: "
-
 
 prompt = "if you want the system to recommend a song type 1 else type 0: "
 while True:
