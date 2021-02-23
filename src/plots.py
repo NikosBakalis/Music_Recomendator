@@ -12,6 +12,8 @@ data.columns = ['user_id', 'artistname', 'trackname', 'playlistname']
 # Remove ';;;;' from the column 'playlistname'
 data['playlistname'] = data['playlistname'].str.replace(r';;;;', '')
 
+data.dropna(inplace=True)
+
 # Conversion to string
 data['artistname'] = data['artistname'].astype(str)
 data['trackname'] = data['trackname'].astype(str)
