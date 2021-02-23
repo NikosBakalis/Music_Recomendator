@@ -83,7 +83,7 @@ def preprocessing(text):
 ## Preprocessed text to column function ##
 def preprocessed_column(column_name):
     preprocessed_text = []
-    for text_data in data[column_name]: #each row in the column will be preprocessed
+    for text_data in data[column_name]:  # each row in the column will be preprocessed
         pp_text_data = preprocessing(text_data)
         preprocessed_text.append(pp_text_data)
     data[f'pp_text_{column_name}'] = preprocessed_text
@@ -97,35 +97,24 @@ preprocessed_column('playlistname')
 # 'pp_text_artistname', 'pp_text_trackname', 'pp_text_playlistname']
 # columns with a name that starts with 'pp_text_' have preprocessed text from the original columns#
 
+
 ####################
 # ΠΟΙΟ ΑΠΟ ΤΑ 2 ΚΟΜΠ ΚΡΑΤΑΩ ???
-data['comb'] = data['pp_text_playlistname'] + ' ' + data['pp_text_artistname'] + ' ' + data['pp_text_trackname']
-# data['comb'] = data['pp_text_playlistname'] + ' ' + data['pp_text_artistname']
+# data['comb'] = data['pp_text_playlistname'] + ' ' + data['pp_text_artistname'] + ' ' + data['pp_text_trackname']
+data['comb'] = data['pp_text_playlistname'] + ' ' + data['pp_text_artistname']
 # data['comb'] = data['playlistname'] + ' ' + data['artistname']
-####################
+###############################
 
+
+# TfidfVectorizer will convert our data['comb'] (a text column ) into numerical
 tfv = TfidfVectorizer()
+# TF-IDF matrix with fit_transform method
 tfv_matrix = tfv.fit_transform(data['comb'])
-
 # Now that we have a matrix of our words, we can begin calculating similarity scores
-
-#####
-#MPORO NA VALO KI ALLO KERNEL OTI THELO
-#####
-
-# Compute the sigmoid kernel
-sig = sigmoid_kernel(tfv_matrix, tfv_matrix)
-
-###################
-# sig = linear_kernel(tfv_matrix, tfv_matrix)
-#####################################
-
-#
-tfv = TfidfVectorizer(analyzer='word', ngram_range=(1, 3), min_df=0, stop_words='english')
-#
-tfv_matrix = tfv.fit_transform(data['comb'])
-#
-sig = sigmoid_kernel(tfv_matrix, tfv_matrix)
+# Compute the cosine similarity , a measure of the similarity between 2 vectors
+# Use the linear kernel because it is faster
+sig = linear_kernel(tfv_matrix, tfv_matrix)
+# Now we have the similarity matrix
 
 # Function that gets as inputs the song title and the number of songs requested to appear
 def recommend(track_title, how_many):
@@ -142,11 +131,12 @@ def recommend(track_title, how_many):
         # Now we have the indexes of most similar tracknames
         # We need to iterate through the list and store tracknames on the indexes in a new list
         # lst has the index of the trackname and the cosine similarity that the track name has with the track name given
-        lst = sorted(lst,key=lambda x:x[1],reverse=True)
+        lst = sorted(lst,key=lambda x: x[1], reverse=True)
         # The list is sorted in the descending order of similarity score
         # We keep only the top (how_many) values of list
-        # Not keeping the first index(0) because its the same trackname
-        lst = lst[1:how_many+1]
+        # We remove the track name that the user asked from the lst
+        lst = [(val, key) for (val, key) in lst if val != i]
+        lst = lst[0:how_many]
         # track_indices is the list with the track names that are going to be returned
         track_indices = []
         for i in range(len(lst)):
@@ -155,34 +145,58 @@ def recommend(track_title, how_many):
             # We save in track_indices list the track name which index is kept in index_fom_lst
             track_indices.append(data['trackname'][index_fom_lst])
         for i in range(len(track_indices)):
-            print(lst[i][0],track_indices[i])
-#######################################################
+            print(lst[i][0], track_indices[i])
 
 
 # Ask user the song title and how many results to return
+# yes_no = 1
+# while yes_no == 1:
+#     try:
+#         input_song = input("Please enter a song title: ")
+#         posa = int(input("Please enter how many songs to return: "))
+#         recommend(input_song, posa)
+#         print('\n')
+#         yes_no = int(input("If you want to continue type 1 else type 0: "))
+#     except ValueError:
+#        print("\nPlease only use integers")
+#        yes_no = int(input("If you want to continue type 1 else type 0: "))
+#     else:
+#         if yes_no != 0 and yes_no != 1:
+#             break
 
-yes_no = 1
-while (yes_no == 1):
 
+# prompt = "if you want the system to recommend a song type 1 else type 0: "
+# while True:
+#     try:
+#         imp = int(input(prompt))
+#         if imp == 1:
+#             input_song = input("Please enter a song title: ")
+#             posa = int(input("Please enter how many songs to return: "))
+#             recommend(input_song, posa)
+#             print('\n')
+#             raise ValueError
+#         break
+#     except ValueError:
+#         prompt = "if you want the system to recommend a song type 1 else type 0: "
+
+
+prompt = "if you want the system to recommend a song type 1 else type 0: "
+while True:
     try:
-        input_song = input("Please enter a song title: ")
-        posa = int(input("Please enter how many songs to return: "))
-        recommend(input_song, posa)
-        print('\n')
-        yes_no = int(input("If you want to continue type 1 else type 0: "))
+        imp = int(input(prompt))
+        if imp == 1:
+            input_song = input("Please enter a song title: ")
+            posa = int(input("Please enter how many songs to return: "))
+
+            try:
+                if isinstance(posa, int) == True:
+                    recommend(input_song, posa)
+                    raise ValueError
+                break
+            except ValueError:
+                prompt = "if you want the system to recommend a song type 1 else type 0: "
+            print('\n')
+            raise ValueError
+        break
     except ValueError:
-       print("\nPlease only use integers")
-       yes_no = int(input("If you want to continue type 1 else type 0: "))
-
-
-
-##########
-# https://www.kaggle.com/gspmoreira/recommender-systems-in-python-101
-# EVALUATION METRIC
-##########
-
-
-
-
-
-
+        prompt = "if you want the system to recommend a song type 1 else type 0: "
