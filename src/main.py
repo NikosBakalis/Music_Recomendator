@@ -1,8 +1,10 @@
 # region Imports
 
+import seaborn
 import functions
 import os
 import numpy
+import matplotlib.pyplot
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from scipy import spatial
@@ -72,7 +74,7 @@ knn.fit(X_train_enc, y_train_enc)
 prediction = knn.predict(X_test_enc)
 
 # The result of the prediction
-result = 1 - spatial.distance.cosine(prediction, y_test_enc)
+result = 1 - spatial.distance.cosine(y_test_enc, prediction)
 
 # region Prints.
 
@@ -135,13 +137,29 @@ for a in search:
 
 y_new = tuple(map(tuple, y_new))
 
+# region Most commons and plot.
+
 y_new = Counter(y_new).most_common()
 
 i = 0
 
+top_ten = list()
+top_ten_suc = list()
+
 while i < 10:
     print(i + 1, "\t:\t", y_new[i][0])
+    top_ten.append(y_new[i][0][1])
+    top_ten_suc.append(y_new[i][1])
     i = i + 1
+
+matplotlib.pyplot.bar(top_ten, top_ten_suc, color=seaborn.color_palette('hls', 10))
+matplotlib.pyplot.title('Song & Song success rate', fontsize=14)
+matplotlib.pyplot.xlabel('Songs', fontsize=14)
+matplotlib.pyplot.ylabel('Success rate', fontsize=14)
+matplotlib.pyplot.xticks(rotation=45)
+matplotlib.pyplot.show()
+
+# endregion
 
 # endregion
 

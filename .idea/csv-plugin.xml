@@ -24,7 +24,21 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\src\Choice.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\src\main.py">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\src\second_try.py">
           <value>
             <Attribute>
               <option name="separator" value="," />
