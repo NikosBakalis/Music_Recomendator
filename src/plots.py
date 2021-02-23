@@ -33,5 +33,3 @@ def plot(column_name):
 plot(data['artistname'])
 plot(data['trackname'])
 plot(data['playlistname'])
-
-
