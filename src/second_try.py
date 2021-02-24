@@ -9,7 +9,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import sigmoid_kernel
 from sklearn.metrics.pairwise import linear_kernel
 
-data = pd.read_csv("../data/2500_dataset.csv",low_memory=False)
+
+data = pd.read_csv("../data/25000_dataset.csv",low_memory=False)
 
 ### Data improvement ###
 # Remove unnamed columns
@@ -26,10 +27,10 @@ data['playlistname'] = data['playlistname'].astype(str)
 # Now we can work with our improved dataset
 
 ### Explore the 25000_dataset ###
-users = data['user_id'].unique() # 30 unique user_ids
-artistname = data['artistname'].unique() # 5271 unique artistnames
-trackname = data['trackname'].unique() # 18275 unique tracknames
-playlistname = data['playlistname'].unique() # 466 unique playlistnames
+users = data['user_id'].unique() # 33 unique user_ids
+artistname = data['artistname'].unique() # 5274 unique artistnames
+trackname = data['trackname'].unique() # 18260 unique tracknames
+playlistname = data['playlistname'].unique() # 458 unique playlistnames
 # print('column_name =',len(users))
 # print('column_name =',len(artistname))
 # print('column_name =',len(trackname))
@@ -137,24 +138,6 @@ def recommend(track_title, how_many):
             track_indices.append(data['trackname'][index_fom_lst])
         for i in range(len(track_indices)):
             print(lst[i][0], track_indices[i])
-
-
-# Ask user the song title and how many results to return
-# yes_no = 1
-# while yes_no == 1:
-#     try:
-#         input_song = input("Please enter a song title: ")
-#         posa = int(input("Please enter how many songs to return: "))
-#         recommend(input_song, posa)
-#         print('\n')
-#         yes_no = int(input("If you want to continue type 1 else type 0: "))
-#     except ValueError:
-#        print("\nPlease only use integers")
-#        yes_no = int(input("If you want to continue type 1 else type 0: "))
-#     else:
-#         if yes_no != 0 and yes_no != 1:
-#             break
-
 
 
 prompt = "if you want the system to recommend a song type 1 else type 0: "
