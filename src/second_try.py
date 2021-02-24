@@ -9,8 +9,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import sigmoid_kernel
 from sklearn.metrics.pairwise import linear_kernel
 
-# TO_DO: content based recommender systems python evaluation metrics
-
 data = pd.read_csv("../data/2500_dataset.csv",low_memory=False)
 
 ### Data improvement ###
