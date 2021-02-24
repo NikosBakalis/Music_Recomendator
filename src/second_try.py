@@ -95,14 +95,7 @@ preprocessed_column('playlistname')
 # 'pp_text_artistname', 'pp_text_trackname', 'pp_text_playlistname']
 # columns with a name that starts with 'pp_text_' have preprocessed text from the original columns#
 
-
-####################
-# ΠΟΙΟ ΑΠΟ ΤΑ 2 ΚΟΜΠ ΚΡΑΤΑΩ ???
-# data['comb'] = data['pp_text_playlistname'] + ' ' + data['pp_text_artistname'] + ' ' + data['pp_text_trackname']
 data['comb'] = data['pp_text_playlistname'] + ' ' + data['pp_text_artistname']
-# data['comb'] = data['playlistname'] + ' ' + data['artistname']
-###############################
-
 
 # TfidfVectorizer will convert our data['comb'] (a text column ) into numerical
 tfv = TfidfVectorizer()
